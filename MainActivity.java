@@ -3,21 +3,15 @@ package com.opteamix.abharadwaj.listviewtest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
@@ -37,6 +31,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listview = (ListView) findViewById(R.id.listView);
+        listview.setAdapter(new display(this));
        /*ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,days);
         listview.setAdapter(arrayAdapter);
         listview.setOnItemClickListener(this);*/
@@ -58,32 +53,55 @@ public class MainActivity extends Activity {
     }*/
 
 
-    class singleRow {
+    class SingleRow {
         String title;
         String desc;
         int image;
+
+
+        public SingleRow(String title, String desc, int image) {
+            this.title=title;
+            this.desc=desc;
+            this.image=image;
+        }
     }
 
     class display extends BaseAdapter {
 
-        ArrayList<singleRow> list;
+        ArrayList<SingleRow> list;
+        Context context;
 
 
         display(Context c) {
-            list = new ArrayList<singleRow>();
+            context=c;
+            list = new ArrayList<SingleRow>();
             Resources res = c.getResources();
             String[] titles = res.getStringArray(R.array.titles);
+            String[] desc = res.getStringArray(R.array.descrption);
+            int[] images = {R.drawable.common_google_signin_btn_icon_dark_normal, R.drawable.common_google_signin_btn_icon_dark_disabled,
+            R.drawable.common_google_signin_btn_icon_dark,R.drawable.common_google_signin_btn_icon_dark_pressed,
+            R.drawable.common_google_signin_btn_icon_dark_focused,R.drawable.common_google_signin_btn_icon_light,
+            R.drawable.common_google_signin_btn_icon_dark_normal};
+
+            for(int i=0;i<7;i++)
+            {
+                list.add(new SingleRow(titles[i],desc[i],images[i]));
+            }
         }
+
+
+
 
 
         @Override
         public int getCount() {
-            return 0;
+
+            return list.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return null;
+            return list.get(position);
         }
 
         @Override
@@ -93,7 +111,22 @@ public class MainActivity extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
+
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View row = inflater.inflate(R.layout.single_row,parent,false);
+
+            TextView title = (TextView) row.findViewById(R.id.googleText);
+            TextView desc = (TextView) row.findViewById(R.id.googleDesc);
+            ImageView image = (ImageView) row.findViewById(R.id.googleImage);
+
+            SingleRow temp = list.get(position);
+
+            title.setText(temp.title);
+            desc.setText(temp.desc);
+            image.setImageResource(temp.image);
+
+            return row;
+
         }
     }
 }
